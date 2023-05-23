@@ -62,21 +62,24 @@ namespace Crawler
                         }
                     }
 
-                    int i = 0;
+                    int i = 0;          // for limiter to work, testing purposes
+                    int counterOfSuccessfulSaves = 0;    // counter of successfully created spells
+
                     // download sourcecode of all links and create XML(Spell) files from them
                     foreach (string href in hrefs)
                     {
-                        if (i == 5) break; else i++;
+                        if (i == 5) break; else i++;    // limit to 5, for testing
                         client = new WebClient();
                         string url = client.DownloadString(href);
 
-                        SerializeToXML(ExtractSpell(url));
+                        if (SerializeToXML(ExtractSpell(url)))
+                            counterOfSuccessfulSaves++;
 
                         Console.WriteLine("Files created (" + href + ").");
                     }
 
 
-                    Console.WriteLine("\nTask finished successfully!\nCreated " + hrefs.Count + " spells as XML files.");
+                    Console.WriteLine("\nTask finished successfully!\nCreated " + counterOfSuccessfulSaves + " spells as XML files.");
                     Console.ReadLine();
                 }
                 catch (Exception e)
@@ -93,19 +96,29 @@ namespace Crawler
         }
 
         // method for saving spell to XML file
-        static void SerializeToXML(Spell spell)
+        static bool SerializeToXML(Spell spell)
         {
-			XmlSerializer serializer = new XmlSerializer(typeof(Spell));
-
-			// Remove invalid filename characters from the URL
-			string fileName = new string(spell.name.ToCharArray()
-				.Where(c => !Path.GetInvalidFileNameChars().Contains(c))
-				.ToArray());
-
-			// Save the serialized spell to a file
-			using (StreamWriter sw = new StreamWriter("../../../../XMLs/" + fileName + ".xml"))
+			try
             {
-                serializer.Serialize(sw, spell);
+                XmlSerializer serializer = new XmlSerializer(typeof(Spell));
+
+                // Remove invalid filename characters from the URL
+                string fileName = new string(spell.name.ToCharArray()
+                    .Where(c => !Path.GetInvalidFileNameChars().Contains(c))
+                    .ToArray());
+
+                // Save the serialized spell to a file
+                using (StreamWriter sw = new StreamWriter("../../../../XMLs/" + fileName + ".xml"))
+                {
+                    serializer.Serialize(sw, spell);
+                }
+
+                return true;
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine("Wystąpił błąd:\n" + ex.Message);
+                return false;
             }
 
             // TODO: fixfile: 1.load, 2.Replace "â€™" with "&apos;", 3.save 
