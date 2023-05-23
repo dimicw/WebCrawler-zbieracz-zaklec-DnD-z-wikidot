@@ -18,6 +18,8 @@ mono_crash.*
 
 # Outcomes (HTMLs and XMLs folders)
 HTMLs/
+XMLs/
+*.xml
 *.html
 
 # Build results
