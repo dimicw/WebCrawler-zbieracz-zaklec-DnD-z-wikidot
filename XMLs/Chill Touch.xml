@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Spell xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <name>Chill Touch</name>
+  <source>Player's Handbook</source>
+  <level>0</level>
+  <school>Necromancy</school>
+  <castingTime>1 action</castingTime>
+  <ritual>false</ritual>
+  <range>120 feet</range>
+  <components>V, S</components>
+  <v>true</v>
+  <s>true</s>
+  <m>false</m>
+  <duration>1 round</duration>
+  <concentration>false</concentration>
+  <description>
+    <string>You create a ghostly, skeletal hand in the space of a creature within range. Make a ranged spell attack against the creature to assail it with the chill of the grave. On a hit, the target takes 1d8 necrotic damage, and it canâ€™t regain hit points until the start of your next turn. Until then, the hand clings to the target. If you hit an undead target, it also has disadvantage on attack rolls against you until the end of your next turn.</string>
+  </description>
+  <atHigherLevels>This spellâ€™s damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8).</atHigherLevels>
+  <spellLists>&lt;a href="/sorcerer"&gt;Sorcerer&lt;/a&gt;, &lt;a href="/warlock"&gt;Warlock&lt;/a&gt;, &lt;a href="/wizard"&gt;Wizard&lt;/a&gt;</spellLists>
+  <spellListsDivided>
+    <artificer>false</artificer>
+    <bard>false</bard>
+    <cleric>false</cleric>
+    <druid>false</druid>
+    <paladin>false</paladin>
+    <ranger>false</ranger>
+    <sorcerer>true</sorcerer>
+    <warlock>true</warlock>
+    <wizard>true</wizard>
+  </spellListsDivided>
+</Spell>
