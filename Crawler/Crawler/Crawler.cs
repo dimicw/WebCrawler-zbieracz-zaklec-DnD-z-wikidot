@@ -65,7 +65,7 @@ namespace Crawler
                     }
 
                     int i = 0;
-                    // download sourcecode of all links and create HTML and XML(Spell) files from them
+                    // download sourcecode of all links and create XML(Spell) files from them
                     foreach (string href in hrefs)
                     {
                         if (i == 5) break; else i++;
@@ -78,7 +78,7 @@ namespace Crawler
                     }
 
 
-                    Console.WriteLine("\nTask finished successfully!\nCreated " + hrefs.Count + " spells as HTML and XML files.");
+                    Console.WriteLine("\nTask finished successfully!\nCreated " + hrefs.Count + " spells as XML files.");
                     Console.ReadLine();
                 }
                 catch (Exception e)
