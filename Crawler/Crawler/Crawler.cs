@@ -44,14 +44,14 @@ namespace Crawler
                         sw.Write(sourceCode);
                     }
 
-                    //create list of links to innividual spells
+                    // create list of links to innividual spells
                     List<string> hrefs = new List<string>();
                     using (var reader = new StreamReader("../../../../" + fileName + ".html"))
                     {
                         string line;
                         while ((line = reader.ReadLine()) != null)
                         {
-                            //find all links
+                            // find all links
                             var matches = Regex.Matches(line, 
                                 @"<a\s+[^>]*href=(?:'(?<url>[^']*)'|""(?<url>[^""]*)""|(?<url>[^\s>]*))" );
 
@@ -65,14 +65,13 @@ namespace Crawler
                     }
 
                     int i = 0;
-                    //download sourcecode of all links and create HTML and XML(Spell) files from them
+                    // download sourcecode of all links and create HTML and XML(Spell) files from them
                     foreach (string href in hrefs)
                     {
                         if (i == 5) break; else i++;
                         client = new WebClient();
                         string url = client.DownloadString(href);
 
-						SaveToFileToHTML(href, url);
                         SerializeToXML(ExtractSpell(url));
 
                         Console.WriteLine("Files created (" + href + ").");
@@ -95,20 +94,7 @@ namespace Crawler
             }
         }
 
-        static void SaveToFileToHTML(string url, string sourceCode)
-        {
-            // Remove invalid filename characters from the URL
-            string fileName = new string(url.ToCharArray()
-                .Where(c => !Path.GetInvalidFileNameChars().Contains(c))
-                .ToArray());
-
-            // Save the source code to a file
-            using (StreamWriter sw = new StreamWriter("../../../../HTMLs/" + fileName + ".html"))
-            {
-                sw.Write(sourceCode);
-            }
-        }
-
+        // method for saving spell to XML file
         static void SerializeToXML(Spell spell)
         {
 			XmlSerializer serializer = new XmlSerializer(typeof(Spell));
@@ -124,9 +110,10 @@ namespace Crawler
                 serializer.Serialize(sw, spell);
             }
 
-            //fixfile: 1.load, 2.Replace "â€™" with "&apos;", 3.save 
+            // TODO: fixfile: 1.load, 2.Replace "â€™" with "&apos;", 3.save 
         }
 
+        // method for extracting spell data from HTML code
         static Spell ExtractSpell(string code)
         {
             string name; 
@@ -143,18 +130,18 @@ namespace Crawler
             string atHigherLevels;
             string spellLists;
 
-            //delete website starters
+            // delete website starters
             code = Between(code, "main-content-wrap col-md-9", "");
 
-            //extract spell's name
+            // extract spell's name
             name = Between(code, "<span>", "</span>");
             code = Between(code, "Source: ", "");
 
-            //extract spell's source
+            // extract spell's source
             source = Between(code, "", "</p>");
 			code = Between(code, "</p>", "");
 
-            //extract spell's level & school
+            // extract spell's level & school
             levelTemp = Between(code, "<p><em>", "</em></p>");
             code = Between(code, "</em></p>", "");
             if (levelTemp.ToLower().Contains("cantrip"))
@@ -167,23 +154,23 @@ namespace Crawler
                 school = Between(levelTemp, "level ", "");
             }
 
-            //extract spell's casting time
+            // extract spell's casting time
             castingTime = Between(code, "</strong> ", "<br />");
             code = Between(code, "<br />", "");
 
-            //extract spell's range
+            // extract spell's range
             range = Between(code, "</strong> ", "<br />");
 			code = Between(code, "<br />", "");
 
-            //extract spell's components
+            // extract spell's components
             components = Between(code, "</strong> ", "<br />");
 			code = Between(code, "<br />", "");
 
-            //extract spell's duration
+            // extract spell's duration
             duration = Between(code, "</strong> ", "</p>");
 			code = Between(code, "</p>", "");
 
-            //extract spell's description
+            // extract spell's description
             while (!code.Substring(0, "<p><strong><em>".Length + 1).Contains("<p><strong><em>"))
             {
                 descriptionTemp.Add(Between(code, "<p>", "</p>"));
@@ -191,7 +178,7 @@ namespace Crawler
             }
             description = descriptionTemp.ToArray();
 
-            //extract spell's "At Higher Level" value (if any)
+            // extract spell's "At Higher Level" value (if any)
             if (code.ToLower().Contains("at higher levels"))
             {
                 atHigherLevels = Between(code, "</em></strong> ", "</p>");
@@ -199,7 +186,7 @@ namespace Crawler
             }
             else atHigherLevels = "";
 
-			//extract spell's spel lists
+			// extract spell's spel lists
 			spellLists = Between(code, "</em></strong> ", "</p>");
 
             return new Spell(name, source, level, school, castingTime, range, components, duration, description, spellLists, atHigherLevels);

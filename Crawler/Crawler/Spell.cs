@@ -57,9 +57,10 @@ namespace Crawler
 			autoFill();
 		}
 
+		// method that autofills specific data for filtering
 		public void autoFill()
 		{
-			//VSM
+			// VSM
 			string vsm;
 			if (components.Contains("("))
 				vsm = Crawler.Between(components, "", " (");
@@ -69,14 +70,14 @@ namespace Crawler
 			if (vsm.ToLower().Contains("s")) s = true;
 			if (vsm.ToLower().Contains("m")) m = true;
 
-			//classes
+			// classes
 			spellListsDivided = new Classes(spellLists);
 
-			//concentration
+			// concentration
 			if (duration.ToLower().Contains("concentration"))
 				concentration = true;
 
-			//ritual
+			// ritual
 			if (castingTime.ToLower().Contains("ritual"))
 				ritual= true;
 		}
@@ -121,6 +122,7 @@ namespace Crawler
 			Fill(spellLists);
 		}
 
+		// method that checks which classes are able to cast the spell
 		public void Fill(string spellLists)
 		{
 			if (spellLists.ToLower().Contains("artificer")) artificer = true;
