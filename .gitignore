@@ -18,7 +18,6 @@ mono_crash.*
 
 # Outcomes (HTMLs and XMLs folders)
 HTMLs/
-XMLs/
 
 # Build results
 [Dd]ebug/
@@ -400,3 +399,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+*.html
+httpdnd5e.wikidot.comspells.html
