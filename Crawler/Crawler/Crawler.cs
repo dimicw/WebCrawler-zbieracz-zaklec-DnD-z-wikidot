@@ -78,7 +78,6 @@ namespace Crawler
                         Console.WriteLine("Files created (" + href + ").");
                     }
 
-
                     Console.WriteLine("\nTask finished successfully!\nCreated " + counterOfSuccessfulSaves + " spells as XML files.");
                     Console.ReadLine();
                 }
@@ -107,8 +106,15 @@ namespace Crawler
                     .Where(c => !Path.GetInvalidFileNameChars().Contains(c))
                     .ToArray());
 
+
+                string subPath = "../../../../XMLs/";   // path to XMLs folder
+
+                // create XMLs folder if it doesn't already exist 
+                if(!Directory.Exists(subPath))
+                    Directory.CreateDirectory(subPath);
+
                 // Save the serialized spell to a file
-                using (StreamWriter sw = new StreamWriter("../../../../XMLs/" + fileName + ".xml"))
+                using (StreamWriter sw = new StreamWriter(subPath + fileName + ".xml"))
                 {
                     serializer.Serialize(sw, spell);
                 }
