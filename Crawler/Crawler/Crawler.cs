@@ -34,9 +34,7 @@ namespace Crawler
                     // Download the HTML content for the starting page
                     string sourceCode = client.DownloadString(baseUrl);
 
-                    string fileName = new string(baseUrl.ToCharArray()
-                        .Where(c => !Path.GetInvalidFileNameChars().Contains(c))
-                        .ToArray());
+                    string fileName = "mainWebsite";
 
                     // Save the source code to a file
                     using (StreamWriter sw = new StreamWriter("../../../../" + fileName + ".html"))
