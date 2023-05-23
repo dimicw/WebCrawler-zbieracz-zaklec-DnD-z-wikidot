@@ -16,6 +16,10 @@
 # Mono auto generated files
 mono_crash.*
 
+# Outcomes (HTMLs and XMLs folders)
+HTMLs/
+XMLs/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
