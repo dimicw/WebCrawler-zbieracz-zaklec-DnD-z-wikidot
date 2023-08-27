@@ -68,7 +68,9 @@ namespace Crawler
                     // download sourcecode of all links and create XML(Spell) files from them
                     foreach (string href in hrefs)
                     {
-                        if (i == 5) break; else i++;    // limit to 5, for testing
+                        Console.WriteLine("Testing (" + href + "). " + i);
+                        if (i == 290) continue; //for some reason, protection from ballistics gives error 503
+                        if (i == 400) break; else i++;    // limit to 5, for testing
                         client = new WebClient();
                         string url = client.DownloadString(href);
 
@@ -167,7 +169,7 @@ namespace Crawler
                 school = Between(levelTemp, "", " cantrip");
             } else
             {
-                level = Convert.ToInt32(levelTemp.Substring(1));
+                level = Convert.ToInt32(levelTemp.Substring(0, 1));
                 school = Between(levelTemp, "level ", "");
             }
 
@@ -190,21 +192,37 @@ namespace Crawler
             // extract spell's description
             while (!code.Substring(0, "<p><strong><em>".Length + 1).Contains("<p><strong><em>"))
             {
-                descriptionTemp.Add(Between(code, "<p>", "</p>"));
+                descriptionTemp.Add(Between(code, "<p>", "</p>")); 
                 code = Between(code, "</p>", "");
+
+                //saving lists in readable form
+                while (code.StartsWith("\n<ul>"))
+                {
+                    descriptionTemp.Add("- " + Between(code, "<li>", "</li>"));
+                    code = Between(code, "</ul>", "");
+                }
+
+                //removing tables
+                if (code.StartsWith("\n<table"))
+                {
+                    descriptionTemp.Add("[TABLE IMAGE]");
+                    code = Between(code, "</table>", "");
+                }
             }
             description = descriptionTemp.ToArray();
 
+
             // extract spell's "At Higher Level" value (if any)
-            if (code.ToLower().Contains("at higher levels"))
+            if (code.ToLower().Contains("at higher levels."))
             {
                 atHigherLevels = Between(code, "</em></strong> ", "</p>");
                 code = Between(code, "</p>", "");
             }
             else atHigherLevels = "";
 
-			// extract spell's spel lists
-			spellLists = Between(code, "</em></strong> ", "</p>");
+            // extract spell's spel lists
+            spellLists = Between(code, "</em></strong> ", "</p>");
+
 
             return new Spell(name, source, level, school, castingTime, range, components, duration, description, spellLists, atHigherLevels);
 		}
