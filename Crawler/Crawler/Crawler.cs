@@ -72,7 +72,7 @@ namespace Crawler
                         client = new WebClient();
                         string url = client.DownloadString(href);
 
-                        if (SerializeToXML(ExtractSpell(url)))
+                        if (SerializeToOneXML(ExtractSpell(url)))
                             counterOfSuccessfulSaves++;
 
                         Console.WriteLine("Files created (" + href + ").");
@@ -95,7 +95,7 @@ namespace Crawler
         }
 
         // method for saving spell to XML file
-        static bool SerializeToXML(Spell spell)
+        static bool SerializeToOneXML(Spell spell)
         {
 			try
             {
