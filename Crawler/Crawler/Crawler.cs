@@ -63,7 +63,7 @@ namespace Crawler
                     }
 
                     int i = 0;          // for limiter to work, testing purposes
-                    int counterOfSuccessfulSaves = 0;    // counter of successfully created spells
+                    List<Spell> spells = new List<Spell>();
 
                     // download sourcecode of all links and create XML(Spell) files from them
                     foreach (string href in hrefs)
@@ -72,13 +72,17 @@ namespace Crawler
                         client = new WebClient();
                         string url = client.DownloadString(href);
 
-                        if (SerializeToOneXML(ExtractSpell(url)))
-                            counterOfSuccessfulSaves++;
+                        spells.Add(ExtractSpell(url));
 
                         Console.WriteLine("Files created (" + href + ").");
                     }
 
-                    Console.WriteLine("\nTask finished successfully!\nCreated " + counterOfSuccessfulSaves + " spells as XML files.");
+                    foreach (Spell spell in spells)
+                        spell.fixApos();
+
+                    if (SerializeToOneXML(spells))
+                    Console.WriteLine("\nTask finished successfully!");
+
                     Console.ReadLine();
                 }
                 catch (Exception e)
@@ -95,18 +99,14 @@ namespace Crawler
         }
 
         // method for saving spell to XML file
-        static bool SerializeToOneXML(Spell spell)
+        static bool SerializeToOneXML(List<Spell> spells)
         {
 			try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(Spell));
+                XmlSerializer serializer = new XmlSerializer(typeof(List<Spell>));
 
                 // Remove invalid filename characters from the URL
-                string fileName = new string(spell.name.ToCharArray()
-                    .Where(c => !Path.GetInvalidFileNameChars().Contains(c))
-                    .ToArray());
-
-
+                string fileName = "all_spells";
                 string subPath = "../../../../XMLs/";   // path to XMLs folder
 
                 // create XMLs folder if it doesn't already exist 
@@ -116,7 +116,7 @@ namespace Crawler
                 // Save the serialized spell to a file
                 using (StreamWriter sw = new StreamWriter(subPath + fileName + ".xml"))
                 {
-                    serializer.Serialize(sw, spell);
+                    serializer.Serialize(sw, spells);
                 }
 
                 return true;

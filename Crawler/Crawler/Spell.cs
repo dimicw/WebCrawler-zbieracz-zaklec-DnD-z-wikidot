@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Crawler
 {
+	[Serializable]
 	public class Spell
 	{
 		public string name;
@@ -80,6 +81,22 @@ namespace Crawler
 			// ritual
 			if (castingTime.ToLower().Contains("ritual"))
 				ritual= true;
+		}
+
+		public void fixApos()
+		{
+			name = name.Replace("â€™", "'");
+			source = source.Replace("â€™", "'");
+			school = school.Replace("â€™", "'");
+			castingTime = castingTime.Replace("â€™", "'");
+			range = range.Replace("â€™", "'");
+			components = components.Replace("â€™", "'");
+			duration = duration.Replace("â€™", "'");
+			atHigherLevels = atHigherLevels.Replace("â€™", "'");
+			for (int i = 0; i < description.Length; i++)
+			{
+				description[i] = description[i].Replace("â€™", "'");
+			}
 		}
 	}
 
