@@ -62,21 +62,20 @@ namespace Crawler
                         }
                     }
 
-                    int i = 0;          // for limiter to work, testing purposes
+                    //int i = 0;          // for limiter to work, testing purposes
                     List<Spell> spells = new List<Spell>();
 
                     // download sourcecode of all links and create XML(Spell) files from them
-                    foreach (string href in hrefs)
+                    for (int i = 0; i < hrefs.Count; i++) //440; i++)//
                     {
-                        Console.WriteLine("Testing (" + href + "). " + i);
+                        Console.WriteLine("Testing (" + hrefs[i] + "). " + i);
                         if (i == 290) continue; //for some reason, protection from ballistics gives error 503
-                        if (i == 400) break; else i++;    // limit to 5, for testing
                         client = new WebClient();
-                        string url = client.DownloadString(href);
+                        string url = client.DownloadString(hrefs[i]);
 
                         spells.Add(ExtractSpell(url));
 
-                        Console.WriteLine("Files created (" + href + ").");
+                        Console.WriteLine("File created.");
                     }
 
                     foreach (Spell spell in spells)
@@ -128,8 +127,6 @@ namespace Crawler
                 Console.WriteLine("Wystąpił błąd:\n" + ex.Message);
                 return false;
             }
-
-            // TODO: fixfile: 1.load, 2.Replace "â€™" with "&apos;", 3.save 
         }
 
         // method for extracting spell data from HTML code
@@ -190,20 +187,58 @@ namespace Crawler
 			code = Between(code, "</p>", "");
 
             // extract spell's description
-            while (!code.Substring(0, "<p><strong><em>".Length + 1).Contains("<p><strong><em>"))
+            while (//!code.Substring(0, "<p><strong><em>".Length + 1).Contains("<p><strong><em>"))
+                !code.Substring(0, "<p><strong><em>At Higher Levels".Length + 1).Contains("<p><strong><em>At Higher Levels")
+                && !code.Substring(0, "<p><strong><em>Spell Lists".Length + 1).Contains("<p><strong><em>Spell Lists")
+                )
             {
-                descriptionTemp.Add(Between(code, "<p>", "</p>")); 
-                code = Between(code, "</p>", "");
+                String currentLine;
 
-                //saving lists in readable form
-                while (code.StartsWith("\n<ul>"))
+                //normal paragraphs
+                if (code.StartsWith("\n<p>") 
+                    || code.StartsWith("<p>"))
+                {
+                    currentLine = Between(code, "<p>", "</p>");
+                    currentLine = currentLine.Replace("<strong>", "")
+                        .Replace("</strong>", "")
+                        .Replace("<em>", "")
+                        .Replace("</em>", "");
+                    descriptionTemp.Add(currentLine);
+                    code = Between(code, "</p>", "");
+                }
+                //all the litst things
+                else if (code.StartsWith("\n<ul>")
+                    || code.StartsWith("<ul>"))
+                    code = Between(code, "<ul>", "");
+
+                else if (code.StartsWith("\n</ul>")
+                    || code.StartsWith("</ul>"))
+                    code = Between(code, "</ul>", "");
+
+                else if (code.StartsWith("\n</li>")
+                    || code.StartsWith("</li>"))
+                    code = Between(code, "</li>", "");
+
+                else if (code.StartsWith("\n<li><strong>")
+                    || code.StartsWith("<li><strong>"))
+                {
+                    descriptionTemp.Add(Between(code, "<li><strong>", "</strong>"));
+                    code = Between(code, "</strong>", "");
+                    if (code.Contains(".</li>"))
+                    {
+                        descriptionTemp.Add(Between(code, "", "</li>"));
+                        code = Between(code, "</li>", "");
+                    }
+                }
+                else if (code.StartsWith("\n<li>")
+                    || code.StartsWith("<li>"))
                 {
                     descriptionTemp.Add("- " + Between(code, "<li>", "</li>"));
-                    code = Between(code, "</ul>", "");
+                    code = Between(code, "</li>", "");
                 }
-
                 //removing tables
-                if (code.StartsWith("\n<table"))
+                else if (code.StartsWith("\n<table") 
+                    || code.StartsWith("<table"))
                 {
                     descriptionTemp.Add("[TABLE IMAGE]");
                     code = Between(code, "</table>", "");
@@ -213,7 +248,8 @@ namespace Crawler
 
 
             // extract spell's "At Higher Level" value (if any)
-            if (code.ToLower().Contains("at higher levels."))
+            if (code.ToLower().Contains("at higher levels.")
+                || code.ToLower().Contains("at higher levels:"))
             {
                 atHigherLevels = Between(code, "</em></strong> ", "</p>");
                 code = Between(code, "</p>", "");
